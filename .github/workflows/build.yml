@@ -2,33 +2,34 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 18
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: |
+          npm install --legacy-peer-deps
 
       - name: Install EAS CLI
         run: npm install -g eas-cli
 
       - name: Initialize EAS Project
-        run: eas init --account deken4908 --non-interactive
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas whoami || true
 
       - name: Build APK on EAS
-        run: eas build --platform android --profile preview --non-interactive
+        run: npx eas-cli build --platform android --profile preview --non-interactive --clear-cache
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
