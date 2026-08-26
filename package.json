@@ -17,8 +17,10 @@
   "devDependencies": {
     "@babel/core": "^7.20.0"
   },
-  "resolutions": {
-    "@expo/vector-icons": "any"
-  },
-  "npmClient": "npm"
+  "overrides": {
+    "@expo/vector-icons": {
+      "react": "$react",
+      "react-native": "$react-native"
+    }
+  }
 }
