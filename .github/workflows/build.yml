@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Android APK (Zero Install)
 
 on:
   push:
@@ -13,27 +13,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install dependencies
-        run: |
-          npm install --legacy-peer-deps
-
       - name: Install EAS CLI
         run: npm install -g eas-cli
 
-      - name: (Super Hack) Defuse Vector Icons
+      - name: Pack Project Sources
         run: |
-          # 這段腳本會尋找 node_modules 中的 vector-icons 並移除其依賴定義
-          find node_modules/@expo/vector-icons -name "package.json" -exec sed -i 's/"peerDependencies":.*},//g' {} +
-          echo "Vector icons dependency constraints defused."
+          # 打包除了 .git 和 node_modules 以外的所有檔案
+          tar -czf project.tar.gz . --exclude='.git' --exclude='node_modules' --exclude='project.tar.gz'
+          echo "Project packed into project.tar.gz"
 
-      - name: Build APK on EAS
+      - name: Build APK on EAS (Using Tarball)
         run: |
-          npx eas-cli project:init --force --non-interactive || true
-          npx eas-cli build --platform android --profile preview --non-interactive --clear-cache
+          npx eas-cli build --platform android --profile preview --non-interactive --clear-cache --source-tarball project.tar.gz
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
