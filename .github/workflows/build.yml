@@ -1,4 +1,4 @@
-name: Build Android APK (Zero Install)
+name: Build Android APK (Push node_modules)
 
 on:
   push:
@@ -13,17 +13,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies (Force)
+        run: |
+          npm install --legacy-peer-deps
+          npm audit fix --force || true
+          # 檢查 vector-icons 是否存在，不存在就強制裝一下並修正
+          npm list @expo/vector-icons || npm install @expo/vector-icons --legacy-peer-deps
+          npm audit fix --force || true
+          echo "Dependencies installed and forced."
+
       - name: Install EAS CLI
         run: npm install -g eas-cli
 
-      - name: Pack Project Sources
+      - name: Build APK on EAS (Using local node_modules)
         run: |
-          # 打包除了 .git 和 node_modules 以外的所有檔案
-          tar -czf project.tar.gz . --exclude='.git' --exclude='node_modules' --exclude='project.tar.gz'
-          echo "Project packed into project.tar.gz"
-
-      - name: Build APK on EAS (Using Tarball)
-        run: |
-          npx eas-cli build --platform android --profile preview --non-interactive --clear-cache --source-tarball project.tar.gz
+          # 我們強制它使用本地安裝好的 node_modules
+          npx eas-cli build --platform android --profile preview --non-interactive --clear-cache
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
