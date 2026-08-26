@@ -25,6 +25,12 @@ jobs:
       - name: Install EAS CLI
         run: npm install -g eas-cli
 
+      - name: (Super Hack) Defuse Vector Icons
+        run: |
+          # 這段腳本會尋找 node_modules 中的 vector-icons 並移除其依賴定義
+          find node_modules/@expo/vector-icons -name "package.json" -exec sed -i 's/"peerDependencies":.*},//g' {} +
+          echo "Vector icons dependency constraints defused."
+
       - name: Build APK on EAS
         run: |
           npx eas-cli project:init --force --non-interactive || true
