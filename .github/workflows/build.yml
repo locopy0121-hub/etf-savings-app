@@ -27,7 +27,7 @@ jobs:
 
       - name: Build APK on EAS
         run: |
-          npx eas-cli project:init --non-interactive || true
+          npx eas-cli project:init --force --non-interactive || true
           npx eas-cli build --platform android --profile preview --non-interactive --clear-cache
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
