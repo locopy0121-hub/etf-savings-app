@@ -17,17 +17,11 @@ jobs:
         with:
           node-version: 18
 
-      - name: Setup Expo
-        uses: expo/expo-github-action@v8
-        with:
-          expo-version: latest
-          eas-version: latest
-
       - name: Install dependencies
         run: npm install
 
-      - name: Build on EAS Cloud
-        run: npx eas-cli build --platform android --profile preview --non-interactive
+      - name: Run EAS Build
+        uses: eas-os/eas-cli-action@v5 # 或者直接透過 npx 執行
+        run: npx --yes eas-cli build --platform android --profile preview --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
