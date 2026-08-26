@@ -24,7 +24,7 @@ jobs:
         run: npm install -g eas-cli
 
       - name: Initialize EAS Project
-        run: eas init --id etf-savings-app --force --non-interactive || eas init --account deken4908 --non-interactive
+        run: eas init --account deken4908 --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
